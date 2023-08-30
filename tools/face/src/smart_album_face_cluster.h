@@ -2,15 +2,7 @@
 #ifndef _FACE_RECOGNIZER_H_
 #define _FACE_RECOGNIZER_H_
 
-
 extern "C" {
-
-void LogInit(const char* logfile, int maxBackups=1, int maxFileSize=5);
-void SetLogLevel(int level=3);
-void LogDebug(const char* func, const char* mge1, const char* mge2="");
-void LogInfo(const char* func, const char* mge1, const char* mge2="");
-void LogWarning(const char* func, const char* mge1, const char* mge2="");
-void LogError(const char* func, const char* mge1, const char* mge2="");
 
 // 可定义全局变量也可定义局部变量
 // 如果定义为全局变量, 必须使用ExtractDestroy释放
@@ -29,7 +21,6 @@ int ExtractInit(Handle* handle, const char* ModelPath, int ForwardType, int Mode
 int ExtractFaceInit(Handle* handle, const char* ModelPath, int ForwardType, int ModelType, int InputSize=640);
 // scale 人物所占封面比例, 建议设置1.5f; rotation 多角度检测人脸, 默认false
 int ExtractImageFeats(Handle* handle, const unsigned char* src, int size, tiorb_image_feats_info* feats_info, float scale=1.5, bool rotation=false);
-int ExtractImagePath(Handle* handle, const char* srcpath, tiorb_image_feats_info* feats_info, float scale, bool rotation);
 // 释放模型
 int ExtractDestroyModel(Handle* handle);
 // 释放模型和结构体
@@ -51,7 +42,7 @@ int ImageDestroyStruct(tiorb_face_detect_info* face_info);
 int ImageDestroyModel(Handle* handle);
 int ImageFaceDetect(Handle* handle, const unsigned char* src, int size, tiorb_face_detect_info* face_info);
 
-//************************************** 生成头像 **************************************//
+//************************************** 人脸关键点 **************************************//
 struct tiorb_face_photo_info {
         unsigned char* img = nullptr;
         int img_size = 0;
@@ -76,7 +67,6 @@ int FeatureDestroyModel(Handle* handle);
 int FeatureDestroy(Handle* handle, tiorb_face_feature_info* feature_info);
 int FeatureDestroyStruct(tiorb_face_feature_info* feature_info);
 int DrawObject(const unsigned char* buffer,int length,int type,int nums,int* labels,int* locations,const char *path);
-
 }
 #endif  
 

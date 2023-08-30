@@ -27,9 +27,8 @@ int main(int argc, char **argv){
     std::vector<std::string> pathvec(numimgs);
     for (int j=0; j<numimgs; j++){
 	pathvec[j] = data["image"][j]["path"];
-	for(int n=0; n<1024; n++){
-	    imgfeats[j*1024+n]=data["image"][j]["feat"][n];
-	}
+	std::vector<float> fVector = data["image"][j]["feat"].get<std::vector<float>>();
+	memcpy(imgfeats+j*1024,fVector.data(),fVector.size()*sizeof(float));
     }  
 
     tiorb_nli_search_info search_info;

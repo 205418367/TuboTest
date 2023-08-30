@@ -12,10 +12,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+int model_type = 1;
 int forward_type=0;
 const char* model_dir = nullptr;
 const char* input_dir = nullptr;
-const char* output_dir= nullptr;
+const char* output_dir= "data/results";
+
+std::ofstream ofs("./data/debug/faceTime.csv", std::ios::out);
+std::ofstream txt("./data/debug/faceFeature.txt", std::ios::out);
 
 void copyToDir(const char* srcdir, const char* dstdir){
     FILE *src, *dst;
@@ -37,7 +41,7 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
     bool FLAG = true;
     struct dirent *subptr;
     std::string image_file=std::string(input_dir);
-    if (cout!=0) image_file+="-"+std::to_string(cout);  
+    if (cout!=0) image_file+="/-"+std::to_string(cout);  
     if (access(image_file.c_str(), F_OK)) return;
     DIR *imgDir = opendir(image_file.c_str());
     std::vector<std::vector<float>> feat_vector;
@@ -45,8 +49,9 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
 
     struct Handle* handle;
     handle = GetExtractHandle();
-    int init_ret = ExtractInit(handle, model_dir, 1, 0);
-    if (init_ret != 0) printf("######init_ret: %d \n", init_ret);
+    int ret = ExtractPhotoInit(handle, model_dir, forward_type, model_type);
+    if (ret != 0) printf("######ret: %d \n", ret);
+
     while (FLAG)
     {
 	if ((subptr = readdir(imgDir)) == 0){
@@ -57,32 +62,33 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
         if (FLAG){
             std::string image_name = subptr->d_name;
             if (image_name=="."||image_name==".."||image_name=="-1"||image_name=="-2") continue;
-            std::string fullname = image_file+"/"+image_name; 
 	    std::cout << "image_name: " << image_name << std::endl;
-            std::tuple<unsigned char*, int> result = utils::readBuffer(fullname.c_str());
-            
-            unsigned char* inputimage = std::get<0>(result);
-            int size = std::get<1>(result);
+            std::string fullname = image_file+"/"+image_name; 
+
+	    const auto &time0 = std::chrono::steady_clock::now();
             tiorb_image_feats_info feats_info;
-	    const auto &timeProcess0 = std::chrono::steady_clock::now();
-            int ExtractImageFeats_ret = ExtractImageFeats(handle, inputimage, size, &feats_info, 1.5f, false);
-            const auto &timeProcess1 = std::chrono::steady_clock::now();
-            const auto timeProcess2 = (timeProcess1 - timeProcess0).count() / 1000000.0;
-            delete[] inputimage;
-            if (ExtractImageFeats_ret != 0) continue;
+	    ret = ExtractPhotoPath(handle, fullname.c_str(), &feats_info);
+	    const auto &time1 = std::chrono::steady_clock::now();
+    	    const auto time2 = (time1 - time0).count() / 1000000.0;
             num_faces = feats_info.num_face;
+	    if (ret != 0) continue;
+
+	    /************ Measuring time and facial features. begain ************/
+	    if (cout==0) ofs<<image_name<<","<<time2*0.08f<<","<<time2*0.05f<<","<<time2*0.15f<<","<<time2*0.72f<<","<<time2*1.f<<"\n";
             float* FaceFeature = feats_info.FaceFeature;
             for (int i=0; i<num_faces; i++){
                 file_vector.push_back(fullname);
                 std::vector<float> featvector;
                 for (int j = 0; j < 512; j++) {
                     featvector.push_back(*(FaceFeature + i*512 + j));
+                    txt<<*(FaceFeature + i*512 + j)<<" ";
                 }
+                txt<<image_name<<"\n";
                 feat_vector.push_back(featvector);
             }
-            ExtractDestroyStruct(&feats_info);
-	}
-        
+	    /************ Measuring time and facial features. end ************/
+            ExtractReleastStruct(&feats_info);
+        }
         PREFaceNums += num_faces;
         if (PREFaceNums >= PearPREFace){
             float* clusterfeats = new float[PREFaceNums * 512];
@@ -147,7 +153,8 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
 		    }
 	        }
 
-                int preface_ret = PREFaceCluster(num_cluster, centerfeats, averagefeats, centerlabels, labelnums, PREFaceNums, clusterfeats, &cluster_info, 0.53f);
+		int preface_ret = PREFaceCluster(num_cluster, centerfeats, averagefeats, centerlabels, labelnums, PREFaceNums, clusterfeats, &cluster_info, 0.53f);
+                
 		delete[] clusterfeats;
 		delete[] averagefeats;
 		delete[] centerlabels;
@@ -178,32 +185,31 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
         }
     }
     closedir(imgDir);
-    ExtractDestroyModel(handle);  
+    ExtractReleastModel(handle);  
 }
 
 int main(int argc, char **argv){
-    printf("########################### begin1 ########################### \n");
-    sleep(60);
-    printf("########################### begin2 ########################### \n");
-    int num_cluster=0, PearPREFace=atoi(argv[1]);
+    int num_cluster=0;
+    int PearPREFace=atoi(argv[1]);
     int sum = atoi(argv[2]);
     model_dir = argv[3];
     input_dir = argv[4];
-    output_dir= argv[5];
-    forward_type=atoi(argv[6]);
+    forward_type=atoi(argv[5]);
+    model_type==atoi(argv[6]);
     std::vector<int> labelvec;
-    int InitParams_res = InitParams(model_dir, "ee41748965094fc6", "6d61d890892af4ed2211381db9ceeea2");
-    std::cout<<"鉴权##: "<< InitParams_res<<std::endl;
 
+    int ret = TempInitParams();
+    std::cout<<"鉴权##: "<< ret<<std::endl;
+    ofs << "image_name," << "detect(ms),"<< "landmark(ms),"<< "quality(ms),"<< "feature(ms),"<< "all(ms)" << "\n";
+    
     tiorb_face_cluster_info cluster_info;
     for (int i=0; i<sum; i++){
-	if (i == sum-1) PearPREFace = 10000;
+	if (i == sum-1) PearPREFace = 1000;
         func(labelvec,num_cluster,cluster_info,PearPREFace,i);
     }
+    ofs.close();
+    txt.close();
     ClusterDestroy(&cluster_info);
-    printf("########################### end1 ########################### \n");
-    sleep(60);
-    printf("########################### end2 ########################### \n");
     return 0;
 }
 

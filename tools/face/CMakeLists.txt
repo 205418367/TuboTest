@@ -4,7 +4,7 @@ project("GetFeature")
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s -std=c++11") 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os -s")
-set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/..")
+set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../")
 set(CODE_DIR "${PROJECT_SOURCE_DIR}/")
 
 
@@ -21,6 +21,9 @@ if(${PLATFORM} MATCHES "Linux")
     message("#################### ${PLATFORM} ####################")
     add_executable(Linux_cluster ${CODE_DIR}/src/test_cluster.cpp ${utils_file})
     target_link_libraries(Linux_cluster PUBLIC ${ENGINE_LIBS} z dl pthread)
+
+    add_executable(Linux_infomap ${CODE_DIR}/src/test_infomap.cpp ${utils_file})
+    target_link_libraries(Linux_infomap PUBLIC ${ENGINE_LIBS} z dl pthread)
 elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
     message("#################### ${PLATFORM} ${ANDROID_ABI} ####################")
     if(${ANDROID_ABI} MATCHES "YINGLAINPU")

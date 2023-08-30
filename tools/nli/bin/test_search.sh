@@ -12,7 +12,7 @@ mkdir data/results/
 # 参数5：与特征库相对应的数据目录
 # 参数6：搜索结果保存目录
 
-./Linux_search 0 models/ data/json/imgfeat.json 美食 data/images data/results
+./Linux_search 0 models/ data/json/imgfeat.json 亲情岁月 data/images data/results
 
 
 

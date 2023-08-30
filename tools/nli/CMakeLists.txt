@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project("GetFeature")
 
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s -std=c++11") 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os -s")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14") 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../")
 set(CODE_DIR "${PROJECT_SOURCE_DIR}/")
 
@@ -13,8 +13,9 @@ include_directories(${PLATFORM}_${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CODE_DIR}/src>
 )
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 set(utils_file ${SOURCE_DIR}/3third/include/utils.cpp)
-file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/*.so)
+file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/${ANDROID_ABI}/*.so)
 
 if(${PLATFORM} MATCHES "Linux")
     message("#################### ${PLATFORM} ####################")
@@ -42,14 +43,14 @@ elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
         target_link_libraries(${ANDROID_ABI}_cluster PUBLIC ${ENGINE_LIBS} OpenVX ovxlib VSC GAL ArchModelSw NNArchPerf dl pthread)
     else()
         # export embedding
-        add_executable(Linux_embedding ${CODE_DIR}/src/export_embedding.cpp ${utils_file})
-        target_link_libraries(Linux_embedding PUBLIC ${ENGINE_LIBS} dl pthread)
+        #add_executable(Android_embedding ${CODE_DIR}/src/export_imgfeat.cpp ${utils_file})
+        #target_link_libraries(Android_embedding PUBLIC ${ENGINE_LIBS} dl pthread)
         # test platform
-        add_executable(Linux_platform ${CODE_DIR}/src/test_platform.cpp ${utils_file})
-        target_link_libraries(Linux_platform PUBLIC ${ENGINE_LIBS} dl pthread)
+        add_executable(Android_platform ${CODE_DIR}/src/test_platform.cpp ${utils_file})
+        target_link_libraries(Android_platform PUBLIC ${ENGINE_LIBS} dl)
         # test search
-        add_executable(Linux_search ${CODE_DIR}/src/test_search.cpp ${utils_file})
-        target_link_libraries(Linux_search PUBLIC ${ENGINE_LIBS} dl pthread)
+        #add_executable(Android_search ${CODE_DIR}/src/test_search.cpp ${utils_file})
+        #target_link_libraries(Android_search PUBLIC ${ENGINE_LIBS} dl pthread)
     endif()
 endif()
 
