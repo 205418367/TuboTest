@@ -11,16 +11,18 @@ extern "C" {
     #define EX_DLL
 #endif  
 
-struct tiorb_img_feature_info {
-    float imgFeature[1024]; 
+// infer image
+struct tiorb_img_feat_info 
+{
+    float* imgFeature = nullptr; 
 };
 
-// infer image
 EX_DLL struct Handle *GetNliImgHandle();
 EX_DLL int NliImgInit(Handle *handle, const char *modelPath, int forwardType);
-EX_DLL int NliImgFeature(Handle *handle, const unsigned char *src, int size, tiorb_img_feature_info *feature);
-EX_DLL int NliImgFeaturePath(Handle *handle, const char *imgpath, tiorb_img_feature_info *feature);
 EX_DLL int NliImgDestroy(Handle *handle);
+EX_DLL int NliImgInfer(Handle *handle, const unsigned char *src, int size, tiorb_img_feat_info *feature);
+EX_DLL int NliImgInferPath(Handle *handle, const char *imgpath, tiorb_img_feat_info *feature);
+EX_DLL int NliImgDestroyStruct(tiorb_img_feat_info *feature);
 
 }
 #endif

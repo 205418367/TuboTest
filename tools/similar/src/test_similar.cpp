@@ -18,7 +18,7 @@ int main(int argc, char **argv){
     int ret = InitParams(model_dir, "ee41748965094fc6", "6d61d890892af4ed2211381db9ceeea2");
     printf("####InitParams_res %d \n", ret); 
     struct Handle *handle = GetSimilarHandle(); 
-    int ret = SimiInit(handle, model_dir, 0);
+    ret = SimiInit(handle, model_dir, 0);
     if (ret != 0) printf("************* ClipImgInit failed! *************");
  
 
@@ -52,6 +52,7 @@ int main(int argc, char **argv){
 	    SimiDestroyStruct(&feature);
             descriptors.push_back(feat);
 	    pathvec.push_back(dir_entry->d_name);
+	    SimiDestroyStruct(&feature);
 	}
     }
     SimiDestroy(handle);

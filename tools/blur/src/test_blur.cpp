@@ -37,11 +37,11 @@ int main(int argc, char **argv){
             unsigned char* img = std::get<0>(result);
             int size = std::get<1>(result);
 
-            tiorb_blur_detect_info detect;
-	    ret = BlurDetect(handle, img, size, &detect);
+            tiorb_blur_infer_info detect;
+	    ret = BlurInfer(handle, img, size, &detect);
 	    delete[] img;
             if (ret!=0) continue;
-	    float blur_score = detect.blurScore[0];
+	    float blur_score = detect.blurScore;
 
 	    std::string srcdir = std::string(input_dir)+"/"+dir_entry->d_name;
 	    std::string detdir = std::string(image_ret)+"/";

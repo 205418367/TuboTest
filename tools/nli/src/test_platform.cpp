@@ -60,9 +60,9 @@ int main(int argc, char **argv){
             strcat(path, dir_entry->d_name);
 	    std::cout<< dir_entry->d_name <<std::endl;
 
-            tiorb_img_feature_info feature;
+            tiorb_img_feat_info feature;
 	    const auto &start1 = std::chrono::steady_clock::now();
-	    ret = NliImgFeaturePath(handle, path, &feature);
+	    ret = NliImgInferPath(handle, path, &feature);
 	    const auto &end1 = std::chrono::steady_clock::now();
 	    std::cout<<"#### infer time:"<<(end1 - start1).count() / 1000000.0 <<"ms"<<std::endl;
 	
@@ -71,13 +71,9 @@ int main(int argc, char **argv){
 	    
 
 	    std::vector<float> feat=std::vector<float>(feature.imgFeature,feature.imgFeature+1024);
-	    //for (auto f: feat)
-	    //{
-		//std::cout<<"feat:"<<f<<std::endl;
-		//getchar();
-	    //}
             descriptors.push_back(feat);
 	    pathvec.push_back(dir_entry->d_name);
+	    NliImgDestroyStruct(&feature);
 	}
     }
     NliImgDestroy(handle);

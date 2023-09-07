@@ -13,11 +13,11 @@ extern "C" {
 
 struct tiorb_img_ocr_info 
 {
-    char* content= nullptr;
+    char* content = nullptr;
 };
 
 EX_DLL struct Handle *GetOcrImgHandle();
-EX_DLL int OcrImgInit(Handle *handle, const char *modelPath, int forwardType);
+EX_DLL int OcrImgInit(Handle *handle, const char *modelPath, int forwardType, int doangle);
 EX_DLL int OcrImgInferBuff(Handle *handle, const unsigned char *src, int size, tiorb_img_ocr_info *ocr_info);
 EX_DLL int OcrImgInferPath(Handle *handle, const char *imgpath, tiorb_img_ocr_info *ocr_info);
 EX_DLL int OcrImgDestroyStruct(tiorb_img_ocr_info *ocr_info);

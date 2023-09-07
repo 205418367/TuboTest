@@ -39,14 +39,14 @@ int main(int argc, char **argv){
     int numtxts = 0;
     nlohmann::json info_json, tmp_json;
     info_json["txt"]=tmp_json;
-    std::ofstream write(std::string(image_ret)+"/txtfeat.json");
+    std::ofstream write(std::string(image_ret)+"/albumfeat.json");
 
     std::vector<std::string> names;
     std::vector<int> labels;
     readTxt(txtfile, names, labels);
     for (auto keyword : names){
-        tiorb_txt_feature_info feat;
-        ret = NliTxtFeature(handle, keyword.c_str(), &feat);
+        tiorb_txt_feat_info feat;
+        ret = NliTxtInfer(handle, keyword.c_str(), &feat);
         if (ret != 0) printf("************* NliTxtFeature failed! ************* \n");
 
         std::cout<< keyword << " " << labels[numtxts] <<std::endl;
@@ -55,6 +55,7 @@ int main(int argc, char **argv){
         infojson["feats"] = std::vector<float>(feat.txtFeature,feat.txtFeature+1024);
         info_json["txt"].push_back(infojson);
 	numtxts += 1;
+	NliTxtDestroyStruct(&feat);
     }
     info_json["numtxts"] = numtxts;
     write << info_json.dump();

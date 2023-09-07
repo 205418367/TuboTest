@@ -37,10 +37,11 @@ int main(int argc, char **argv){
         ret = NliTxtInit(handle, model_dir, 0);
         if (ret != 0) printf("************* NliTxtInit failed! ************* \n");
 
-	tiorb_txt_feature_info feature;
-        ret = NliTxtFeature(handle, key_words, &feature);
+	tiorb_txt_feat_info  feat;
+        ret = NliTxtInfer(handle, key_words, &feat);
         if (ret != 0) printf("************* NliTxtFeature failed! ************* \n");
-	SearchImg(feature.txtFeature, numimgs, imgfeats, &search_info, 30);
+	SearchImg(feat.txtFeature, numimgs, imgfeats, &search_info, 30);
+	NliTxtDestroyStruct(&feat);
 	NliTxtDestroy(handle);
     }else{
 	struct Handle *handle = GetNliImgHandle(); 
@@ -50,11 +51,12 @@ int main(int argc, char **argv){
         std::tuple<unsigned char*, int> result = utils::readBuffer(input_img);
         unsigned char* img = std::get<0>(result);
         int size = std::get<1>(result);
-	tiorb_img_feature_info feature;
-        ret = NliImgFeature(handle, img, size, &feature);
+	tiorb_img_feat_info feature;
+        ret = NliImgInfer(handle, img, size, &feature);
         delete[] img;
         if (ret != 0) printf("************* NliImgFeature failed! ************* \n");
 	SearchImg(feature.imgFeature, numimgs, imgfeats, &search_info, 1);
+	NliImgDestroyStruct(&feature);
 	NliImgDestroy(handle);
     }
     delete[] imgfeats;

@@ -11,15 +11,17 @@ extern "C" {
     #define EX_DLL
 #endif  
 
-struct tiorb_txt_feature_info {
-    float txtFeature[1024]; 
+struct tiorb_txt_feat_info 
+{
+    float* txtFeature = nullptr; 
 };
 
 // infer txt
 EX_DLL struct Handle *GetNliTxtHandle();
 EX_DLL int NliTxtInit(Handle *handle, const char *modelPath, int forwardType);
-EX_DLL int NliTxtFeature(Handle *handle, const char *txt, tiorb_txt_feature_info *feature);
 EX_DLL int NliTxtDestroy(Handle *handle);
+EX_DLL int NliTxtInfer(Handle *handle, const char *txt, tiorb_txt_feat_info *feature);
+EX_DLL int NliTxtDestroyStruct(tiorb_txt_feat_info *feature);
 
 }
 #endif

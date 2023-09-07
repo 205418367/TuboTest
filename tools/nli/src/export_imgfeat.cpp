@@ -41,8 +41,8 @@ int main(int argc, char **argv){
             unsigned char* img = std::get<0>(result);
             int size = std::get<1>(result);
 
-            tiorb_img_feature_info feature;
-            ret = NliImgFeature(handle, img, size, &feature);
+            tiorb_img_feat_info feature;
+            ret = NliImgInfer(handle, img, size, &feature);
 	    delete[] img;
             if (ret!=0) continue;
 
@@ -51,6 +51,7 @@ int main(int argc, char **argv){
 	    infojson["feat"] = std::vector<float>(feature.imgFeature,feature.imgFeature+1024);
 	    info_json["image"].push_back(infojson);
 	    numimgs += 1;
+	    NliImgDestroyStruct(&feature);
 	}
     }
     info_json["numimgs"] = numimgs;
