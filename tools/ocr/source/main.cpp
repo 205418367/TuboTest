@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     } 
 
     Handle *handle = GetOcrImgHandle();
-    int ret = OcrImgInit(handle, model_dir, 0, 0);
+    int ret = OcrImgInit(handle, model_dir, 0, 1);
     if (ret != 0) return ret;
 
     while ((dir_entry = readdir(dir)) != 0) {

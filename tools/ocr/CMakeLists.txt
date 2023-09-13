@@ -13,10 +13,10 @@ include_directories(${PWD_DIR}/source)
 #set(OBJECT)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
-file(GLOB ENGINE_LIBS ${ORI_DIR}/3third/so/${PLATFORM}/*.so)
+link_directories(${ORI_DIR}/3third/so/${PLATFORM})
 
 add_executable(main source/main.cpp )
-target_link_libraries(main PUBLIC ${ENGINE_LIBS} pthread dl z)
+target_link_libraries(main PUBLIC smart_object smart_album pthread dl z)
 
 
 
