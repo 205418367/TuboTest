@@ -30,7 +30,7 @@ int main(int argc, char **argv){
     const char *image_ret = argv[3];
    
     int ret = InitParams(model_dir, "ee41748965094fc6", "6d61d890892af4ed2211381db9ceeea2");
-    printf("####InitParams_res %d \n", ret); 
+    printf("####InitParams: %d \n", ret); 
 
     struct Handle *handle = GetNliTxtHandle(); 
     ret = NliTxtInit(handle, model_dir, 0);

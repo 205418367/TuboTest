@@ -10,31 +10,12 @@
 #include "utils.h"
 #include <chrono>
 
-void readTxt(const char* txtfile, std::vector<std::string>& names, std::vector<int>& label){
-    std::string content, tmp;
-    std::ifstream txt(txtfile);
-    if (txt){
-        while (getline(txt, content, '\n')){
-	    std::stringstream ss(content);
-            ss>>tmp;
-	    names.push_back(tmp);
-	    ss>>tmp;
-	    label.push_back(atoi(tmp.c_str()));
-        }
-    }else{
-        std::cout << "Open file faild." << std::endl;
-	return;
-    }
-    txt.close();
-}
-
 int main(int argc, char **argv){
     const char *model_dir = argv[1]; //"models/";
-    const char *txtfile   = argv[2];
-    const char *input_dir = argv[3]; //"data/cluster";
-    const char *image_ret = argv[4]; //"data/results";
-    int showid = atoi(argv[5]);
-    float thresh = atof(argv[6]);
+    const char *input_dir = argv[2]; //"data/cluster";
+    const char *image_ret = argv[3]; //"data/results";
+    int showid = atoi(argv[4]);
+    float thresh = atof(argv[5]);
    
     int ret = InitParams(model_dir, "ee41748965094fc6", "6d61d890892af4ed2211381db9ceeea2", "");
     std::cout<<"鉴权##: "<< ret <<std::endl;
@@ -95,16 +76,11 @@ int main(int argc, char **argv){
     int* indexs = cluster_info.indexs;
     float* scores = cluster_info.scores;
 
-    std::vector<std::string> names;
-    std::vector<int> temps;
-    readTxt(txtfile, names, temps);
     for (int i = 0; i<num_feats; i++) {
 	int label = labels[i];
         if (label == -1) continue;
 	std::string image_dir = std::string(image_ret)+"/"+ std::to_string(label);
-	for (int j=0; j<5; j++) {
-	    image_dir += "#"+names[indexs[label*5+j]]+":"+std::to_string(scores[label*5+j]);
-	}
+	image_dir += "#"+albumfeat[indexs[label]]+":"+std::to_string(scores[label]);
 	mkdir(image_dir.c_str(), 0755);
         std::string file_path = std::string(input_dir) +"/"+ pathvec[i];
 	utils::copyToDir(file_path.c_str(), (image_dir+"/"+pathvec[i]).c_str());
