@@ -12,7 +12,7 @@ mkdir data/results
 # 参数5：每类最多展示
 # 参数6：聚类阈值
 
-./Linux_platform models/ data/cluster data/results 30 0.83
+./Linux_platform models data/cluster data/results 30 0.83
 
 
 

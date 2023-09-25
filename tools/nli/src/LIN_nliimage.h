@@ -1,6 +1,4 @@
 #pragma once
-#ifndef Tiorb_CLIP_IMAGE_H_
-#define Tiorb_CLIP_IMAGE_H_
 #include <iostream>
 
 extern "C" {
@@ -25,4 +23,4 @@ EX_DLL int NliImgInferPath(Handle *handle, const char *imgpath, tiorb_img_feat_i
 EX_DLL int NliImgDestroyStruct(tiorb_img_feat_info *feature);
 
 }
-#endif
+

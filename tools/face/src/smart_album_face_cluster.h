@@ -66,7 +66,6 @@ int ExtractFeature(Handle* handle, const unsigned char* src, int size, tiorb_fac
 int FeatureDestroyModel(Handle* handle);
 int FeatureDestroy(Handle* handle, tiorb_face_feature_info* feature_info);
 int FeatureDestroyStruct(tiorb_face_feature_info* feature_info);
-int DrawObject(const unsigned char* buffer,int length,int type,int nums,int* labels,int* locations,const char *path);
 }
 #endif  
 

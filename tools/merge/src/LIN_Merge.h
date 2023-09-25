@@ -13,8 +13,8 @@ extern "C" {
         char* content= nullptr;
     };
 
-    EX_DLL int MergeFromPath(int width,int height,const char* jsonname,const char* jsondir,const char* outdir,tiorb_img_merge_info* info);
-    EX_DLL int MergeFromJson(int width,int height,const char* jsoninfo,const char* outdir,tiorb_img_merge_info* info);
+    EX_DLL int MergeFromPath(int width,int height,const char* jsonname,const char* outdir,tiorb_img_merge_info* info, float thresh=0.3);
+    EX_DLL int MergeFromJson(int width,int height,const char* jsoninfo,const char* outdir,tiorb_img_merge_info* info, float thresh=0.3);
     EX_DLL int MergeDestroy(tiorb_img_merge_info* info);
     /* ======================================================= imgMerge ======================================================= */
     

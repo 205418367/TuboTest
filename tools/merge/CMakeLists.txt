@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project("GetFeature")
 
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14") 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17") 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../")
 set(CODE_DIR "${PROJECT_SOURCE_DIR}/")
@@ -24,9 +24,11 @@ if(${PLATFORM} MATCHES "Linux")
     # export img embedding
     add_executable(Linux_imgJson ${CODE_DIR}/src/export_imgJson.cpp ${utils_file})
     target_link_libraries(Linux_imgJson PUBLIC ${ENGINE_LIBS} ${OpenCV_LIBS} z dl pthread)
-    # export txt embedding
+    # export txt embedding stdc++fs
     add_executable(Linux_appear ${CODE_DIR}/src/appearChange.cpp ${utils_file})
     target_link_libraries(Linux_appear PUBLIC ${ENGINE_LIBS} dl pthread)
+    add_executable(Linux_merge ${CODE_DIR}/src/merge.cpp ${utils_file})
+    target_link_libraries(Linux_merge PUBLIC ${ENGINE_LIBS} dl pthread )
 
 elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
     message("#################### ${PLATFORM} ${ANDROID_ABI} ####################")

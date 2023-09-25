@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project("GetFeature")
 
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s -std=c++11") 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s -std=c++17") 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os -s")
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../")
 set(CODE_DIR "${PROJECT_SOURCE_DIR}/")

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project("GetFeature")
 
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s -std=c++11") 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s -std=c++17") 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os -s")
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../")
 set(CODE_DIR "${PROJECT_SOURCE_DIR}/")
@@ -19,7 +19,7 @@ file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/*.so)
 
 if(${PLATFORM} MATCHES "Linux")
     message("#################### ${PLATFORM} ####################")
-    add_executable(Linux_cluster ${CODE_DIR}/src/test_cluster.cpp ${utils_file})
+    add_executable(Linux_cluster ${CODE_DIR}/src/smart_album_face_cluster.cpp ${utils_file})
     target_link_libraries(Linux_cluster PUBLIC ${ENGINE_LIBS} z dl pthread)
 
     add_executable(Linux_infomap ${CODE_DIR}/src/test_infomap.cpp ${utils_file})

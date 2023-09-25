@@ -68,7 +68,7 @@ int main(int argc, char **argv){
 	std::string imagename = pathvec[indexs[i]];
         std::string srcimg = std::string(input_dir)+"/"+imagename;
         std::string tarimg = std::string(image_ret)+"/"+imagename;
-	utils::copyToDir(srcimg.c_str(), tarimg.c_str());
+	utils::CopyFile(srcimg, tarimg);
     }
     SearchDestroy(&search_info);
     return 0;
