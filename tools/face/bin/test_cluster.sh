@@ -15,7 +15,7 @@ mkdir data/debug
 # 参数6：0 CPU; 1 GPU
 # 参数7：使用big face(0不使用 1使用)
 # 参数8：输入图片的尺寸默认640，可选480与320
-./Linux_cluster 200 2 models/ data/images 1 0 0 640
+./Linux_cluster 200 2 models/ data/cluster 1 0 1 640
 
 
 

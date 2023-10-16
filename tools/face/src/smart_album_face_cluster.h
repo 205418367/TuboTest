@@ -42,17 +42,8 @@ int ImageDestroyStruct(tiorb_face_detect_info* face_info);
 int ImageDestroyModel(Handle* handle);
 int ImageFaceDetect(Handle* handle, const unsigned char* src, int size, tiorb_face_detect_info* face_info);
 
-//************************************** 人脸关键点 **************************************//
-struct tiorb_face_photo_info {
-        unsigned char* img = nullptr;
-        int img_size = 0;
-};
-struct Handle* GetPhotoHandle();
-
-int PhotoInit(Handle* handle, const char* ModelPath, int ForwardType);
-int PhotoDestroyModel(Handle* handle);
-int PhotoDestroyStruct(tiorb_face_photo_info* photo_info);
-int PhotoExtract(Handle* handle, const unsigned char* src, int size, int* rect, tiorb_face_photo_info* photo_info, float scale=1.5f, bool rotation=false);
+//************************************** 人脸画框 **************************************//
+int DrawRectangle(const char* imgpath, int* rect, const char* outpath);
 
 //************************************** 特征提取 **************************************//
 struct tiorb_face_feature_info {

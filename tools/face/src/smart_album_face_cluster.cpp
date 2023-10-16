@@ -5,6 +5,7 @@
 #include "linux_api.h"
 #include "smart_album_face_cluster.h"
 #include <string>
+#include <string.h>
 
 int bigface = 0;
 int facesize = 640;
@@ -18,24 +19,24 @@ const char* input_dir = nullptr;
 const char* output_dir= "data/results";
 
 std::ofstream ofs("./data/debug/faceTime.csv", std::ios::out);
-std::ofstream txt("./data/debug/faceFeature.txt", std::ios::out);
+//std::ofstream txt("./data/debug/faceFeature.txt", std::ios::out);
 
 void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info& cluster_info, int PearPREFace, int cout) {
     int PREFaceNums = 0;
     bool FLAG = true;
 
-    std::string image_file=std::string(input_dir);
-    if (cout!=0) image_file+="/-"+std::to_string(cout);  
+    std::string image_file=std::string(input_dir); 
+    if (cout!=0)image_file=utils::JoinPaths(input_dir,std::to_string(cout));
     if (!utils::DirectoryExist(image_file)) return;
 
     vector<string> TraverseVec = utils::TraverseDirectory(image_file);
     std::vector<std::vector<float>> feat_vector;
     std::vector<std::string> file_vector;
+    std::vector<int> rect_vector;
 
-    struct Handle* handle;
+    int init_ret=0; struct Handle* handle;
     if (ISdetect){
         handle = GetExtractHandle();
-        int init_ret = 0;
 	if (bigface){
 	    std::cout<<"############### centerface ###############"<<std::endl;
             init_ret = ExtractFaceInit(handle, model_dir, forward_type, model_type, facesize);
@@ -43,15 +44,14 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
 	    std::cout<<"############### scrfd ###############"<<std::endl;
 	    init_ret = ExtractInit(handle, model_dir, forward_type, model_type);
 	}
-
-        if (init_ret != 0) printf("######init_ret: %d \n", init_ret);
         std::cout<<"************************* 检测人脸模式 *************************"<<std::endl;
     }else{
 	handle = GetFeatureHandle();
-        int init_ret = FeatureInit(handle, model_dir, forward_type, model_type);
-	if (init_ret != 0) return;
+        init_ret = FeatureInit(handle, model_dir, forward_type, model_type);
         std::cout<<"************************* 提取特征模式 *************************"<<std::endl;
     }
+    if (init_ret != 0) {printf("######init_ret: %d \n", init_ret); return;}
+
     while (FLAG)
     {
 	if (TraverseVec.size() == 0){
@@ -70,43 +70,41 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
                 tiorb_image_feats_info feats_info;
 		TIME startTime = utils::GetCurrentTime();
                 int ret = ExtractImageFeats(handle, inputimage, size, &feats_info, 1.5f, false);
-		if (ret!=0) std::cout << "ExtractImageFeats: " << ret << std::endl;
 		int64_t endTime = utils::GetDurationTime(startTime);
-                num_faces = feats_info.num_face;
-		delete[] inputimage;
-                if (ret != 0) continue;
+                delete[] inputimage; if (ret != 0) continue;
 		if (cout==0) ofs<<fullname<<","<<endTime*0.08f<<","<<endTime*0.05f<<","<<endTime*0.15f<<","<<endTime*0.72f<<","<<endTime<<"\n";
 
+                num_faces = feats_info.num_face;
                 float* FaceFeature = feats_info.FaceFeature;
+                int* location = feats_info.location;
                 for (int i=0; i<num_faces; i++){
                     file_vector.push_back(fullname);
+		    for (int n=0; n<4; n++) rect_vector.push_back(location[i*4+n]); 
                     std::vector<float> featvector;
                     for (int j = 0; j < 512; j++) {
                         featvector.push_back(*(FaceFeature + i*512 + j));
-                        txt<<*(FaceFeature + i*512 + j)<<" ";
+                        //txt<<*(FaceFeature + i*512 + j)<<" ";
                     }
-                    txt<<fullname<<"\n";
+                    //txt<<fullname<<"\n";
                     feat_vector.push_back(featvector);
                 }
                 ExtractDestroyStruct(&feats_info);
             }else{
                 tiorb_face_feature_info feature_info;
-                const auto &timeProcess0 = std::chrono::steady_clock::now();
+                TIME startTime = utils::GetCurrentTime();
                 int ret = ExtractFeature(handle, inputimage, size, &feature_info);
-                const auto &timeProcess1 = std::chrono::steady_clock::now();
-    	        const auto timeProcess2 = (timeProcess1 - timeProcess0).count() / 1000000.0;
-                delete[] inputimage;
-		if (ret != 0) continue;
-                if (cout== 0) ofs<<fullname<<","<<timeProcess2*0.08f<<","<<timeProcess2*0.05f<<","<<timeProcess2*0.15f<<","<<timeProcess2*0.72f<<","<<timeProcess2*1.f<<"\n";
+                int64_t endTime = utils::GetDurationTime(startTime);
+		delete[] inputimage; if (ret != 0) continue;
+                if (cout==0) ofs<<fullname<<","<<endTime*0.08f<<","<<endTime*0.05f<<","<<endTime*0.15f<<","<<endTime*0.72f<<","<<endTime<<"\n";
+                num_faces = 1;
 		file_vector.push_back(fullname);
                 std::vector<float> featvector;
-                num_faces = 1;
                 float* FaceFeature = feature_info.FaceFeature;
                 for (int j = 0; j < 512; j++) {
                     featvector.push_back(*(FaceFeature + j));
-		    txt<<*(FaceFeature + j)<<" ";
+		//    txt<<*(FaceFeature + j)<<" ";
                 }
-		txt<<fullname<<"\n";
+		//txt<<fullname<<"\n";
                 feat_vector.push_back(featvector);
                 FeatureDestroyStruct(&feature_info);
             }
@@ -127,22 +125,24 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
 		delete[] clusterfeats;
                 num_cluster = cluster_info.num_cluster;
                 for (int i = 0; i < PREFaceNums; i++) {
-                    int index = *(cluster_info.labels + i);
-                    labelvec.push_back(index);
-                    std::string filepath = file_vector[i];
+                    int label = *(cluster_info.labels + i);
+                    labelvec.push_back(label);
                     string directory, filename;
-		    utils::splitPathAndName(filepath, directory, filename);
-    	            if (index==-1){
-                        std::string destdir = std::string(input_dir)+"/-"+std::to_string(cout+1);
+		    utils::splitPathAndName(file_vector[i], directory, filename);
+    	            if (label==-1){
+                        std::string destdir = utils::JoinPaths(input_dir,std::to_string(cout+1));
 			utils::CreateDirectory(destdir);
-                        utils::CopyFile(file_vector[i], (destdir+"/"+filename));
+                        utils::CopyFile(file_vector[i], utils::JoinPaths(destdir,filename));
                     }else{
-			std::string image_dir = std::string(output_dir)+"/" + std::to_string(index);
-			utils::CreateDirectory(image_dir);
-                        utils::CopyFile(file_vector[i], (image_dir +"/"+ filename));
+                        std::string imagedir = utils::JoinPaths(output_dir,std::to_string(label));
+			utils::CreateDirectory(imagedir);
+                        //utils::CopyFile(file_vector[i], utils::JoinPaths(imagedir,filename));
+                        int rect[4]; for (int j=i*4;j<i*4+4;j++) rect[j-i*4]=rect_vector[j]; 
+                        DrawRectangle(file_vector[i].c_str(), rect, utils::JoinPaths(imagedir,filename+".jpg").c_str());
                     } 
                 }
                 std::vector<std::string>().swap(file_vector);
+		std::vector<int>().swap(rect_vector);
             }else{
 		float* averagefeats = new float[num_cluster*512];
                 float* centerfeats = new float[num_cluster*512];
@@ -185,23 +185,26 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
                 int num_all = num_cluster+PREFaceNums;
                 for (int i = 0; i < num_all; i++) {
                     if (i<num_cluster) continue;
-                    int index = *(cluster_info.labels + i);
-                    labelvec.push_back(index);
-                    std::string filepath = file_vector[i-num_cluster];
+                    int label = *(cluster_info.labels + i);
+                    labelvec.push_back(label);
+                    int n=i-num_cluster; std::string filepath = file_vector[i-num_cluster];
                     string directory, filename;
 		    utils::splitPathAndName(filepath, directory, filename);
-	            if (index == -1){
-                        std::string destdir = std::string(input_dir)+"/-"+std::to_string(cout+1);
+	            if (label == -1){
+                        std::string destdir = utils::JoinPaths(input_dir,std::to_string(cout+1));
                         utils::CreateDirectory(destdir);
-                        utils::CopyFile(file_vector[i-num_cluster].c_str(), (destdir+"/"+filename).c_str());
+                        utils::CopyFile(file_vector[i-num_cluster], utils::JoinPaths(destdir,filename));
                     }else{
-			std::string image_dir = std::string(output_dir)+"/"+std::to_string(index);
-                        utils::CreateDirectory(image_dir);
-                        utils::CopyFile(file_vector[i-num_cluster].c_str(), (image_dir+"/"+filename).c_str());
+                        std::string imagedir = utils::JoinPaths(output_dir,std::to_string(label));
+                        utils::CreateDirectory(imagedir);
+                        //utils::CopyFile(file_vector[i-num_cluster], utils::JoinPaths(imagedir,filename));
+                        int rect[4]; for (int j=n*4;j<n*4+4;j++) rect[j-n*4]=rect_vector[j]; 
+                        DrawRectangle(file_vector[i-num_cluster].c_str(), rect, utils::JoinPaths(imagedir,filename+".jpg").c_str());
                     }
                 }
                 num_cluster = cluster_info.num_cluster;
 		std::vector<std::string>().swap(file_vector);
+		std::vector<int>().swap(rect_vector);
             }
             PREFaceNums = 0;
         }
@@ -236,7 +239,7 @@ int main(int argc, char **argv){
         func(labelvec,num_cluster,cluster_info,PearPREFace,i);
     }
     ofs.close();
-    txt.close();
+    //txt.close();
     ClusterDestroy(&cluster_info);
     return 0;
 }

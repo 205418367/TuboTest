@@ -18,11 +18,11 @@ int main(int argc, char **argv) {
     int ret = MergeFromPath(width, height, json_dir, save_dir, &merge_info, 0.5f);
     //if (true) goto exit;
 
-    //std::string jsonpath = std::string(json_dir) +"/"+ std::string(json_file);
-    //std::ifstream jsonfile(jsonpath);
-    //nlohmann::json data = nlohmann::json::parse(jsonfile);
+    //std::ifstream jsonfile(json_dir);
+    //json data = json::parse(jsonfile);
+    //jsonfile.close();
     //std::string json_info = data.dump();
-    //int ret = MergeFromJson(width,height,json_info.c_str(),save_dir,&merge_info);
+    //int ret = MergeFromJson(width,height,json_info.c_str(),save_dir,&merge_info, 0.5f);
 //exit:
     std::cout<<"====>content2<===="<<std::endl;
     std::cout<<merge_info.content<<std::endl;

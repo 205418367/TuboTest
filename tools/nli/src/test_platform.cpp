@@ -62,7 +62,7 @@ int main(int argc, char **argv){
     json json_info = json::parse(cluster_info.content);
     int nums = json_info.size();
     for (int i=0; i<nums; i++){
-	std::string name = json_info[i]["name"];
+	std::string name = std::to_string(int(json_info[i]["name"]));
         auto indexVec = json_info[i]["index"];
 	
 	std::string imageDir = std::string(image_dir)+"/"+ std::to_string(i)+name;
