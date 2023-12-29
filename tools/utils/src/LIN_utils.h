@@ -1,19 +1,25 @@
 ﻿#pragma once
-#ifndef _TIORB_UTILS_H_
-#define _TIORB_UTILS_H_
 #include <iostream>
-
-#if defined(_WIN32) || defined(_WIN64)
-    #define EX_DLL __declspec(dllexport)
-#else
-    #define EX_DLL
-#endif  
+ 
 
 extern "C" {
+    struct TiorbModuleJsonInfo 
+    {
+        char* content = nullptr;
+    };
+    int DestroyModuleJson(TiorbModuleJsonInfo *JsonInfo);
 
-EX_DLL int FrameExtraction(const char* inpath, int target, const char* outpath);
-EX_DLL int ResizeImagePath(const char* imgpath, int target, const char* outpath);
-EX_DLL int transferHeic2Jpg(const char* heicPicPath,const char* outputPicPath,int compressQulity);
+    // 1.Generate thumbnail
+    struct tiorb_resize_image_info {
+        unsigned char* img = nullptr;
+        int imgsize = 0;
+    };
+    int ResizeImageBuffer(const unsigned char* buffer, int length, int target, tiorb_resize_image_info* image_info);
+    int ResizeDestroy(tiorb_resize_image_info* image_info);
+    int ResizeImagePath(const char* imgpath, int target, const char* outpath);
+    int ResizeImageBatch(const char* JsonStr,int target, const char* outdir, TiorbModuleJsonInfo* JsonInfo, int NumThreads);
+
+    // 2.Extracting frames from a video
+    int FrameExtraction(const char* inpath, int target, const char* outpath, int numFrame=1);
 }
-#endif
 

@@ -19,7 +19,7 @@ file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/${ANDROID_A
 
 if(${PLATFORM} MATCHES "Linux")
     message("#################### ${PLATFORM} ####################")
-    add_executable(Linux_similar ${CODE_DIR}/src/test_similar.cpp ${utils_file})
+    add_executable(Linux_similar ${CODE_DIR}/src/test_thread.cpp ${utils_file})
     target_link_libraries(Linux_similar PUBLIC ${ENGINE_LIBS} dl pthread)
 elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
     message("#################### ${PLATFORM} ${ANDROID_ABI} ####################")

@@ -16,7 +16,7 @@ struct tiorb_similar_cluster_info {
     int* labels = nullptr;
 };
 EX_DLL int SimilarCluster(int numfeatures, float* imgfeatures, tiorb_similar_cluster_info* cluster_info, float thresh=0.94f);
-EX_DLL int SimilarDestroy(tiorb_similar_cluster_info* cluster_info);
+EX_DLL int SimilarClusterDestroyStruct(tiorb_similar_cluster_info* cluster_info);
 
 }
 #endif

@@ -6,7 +6,7 @@ export LD_LIBRARY_PATH=../../3third/so/Linux:$LD_LIBRARY_PATH
 # 参数2：图片目录
 # 参数3：输出目录
 
-./Linux_imgfeat models/ data/images data/results
+./Linux_imgfeat models/ data/images
 
 
 

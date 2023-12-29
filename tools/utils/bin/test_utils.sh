@@ -9,7 +9,7 @@ export LD_LIBRARY_PATH=../../3third/so/Linux:$LD_LIBRARY_PATH
 rm -rf data/results
 mkdir -p data/results
 
-./Linux_utils 1000 data/0710 data/results/
+./Linux_utils 480 data/images/ data/results/
 
 
 

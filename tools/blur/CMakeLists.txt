@@ -18,7 +18,7 @@ file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/*.so)
 
 if(${PLATFORM} MATCHES "Linux")
     message("#################### ${PLATFORM} ####################")
-    add_executable(Linux_blur ${CODE_DIR}/src/test_blur.cpp ${utils_file})
+    add_executable(Linux_blur ${CODE_DIR}/src/test_blur_module.cpp ${utils_file})
     target_link_libraries(Linux_blur PUBLIC ${ENGINE_LIBS} dl pthread)
 elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
     message("#################### ${PLATFORM} ${ANDROID_ABI} ####################")

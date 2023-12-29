@@ -37,13 +37,7 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
     int init_ret=0; struct Handle* handle;
     if (ISdetect){
         handle = GetExtractHandle();
-	if (bigface){
-	    std::cout<<"############### centerface ###############"<<std::endl;
-            init_ret = ExtractFaceInit(handle, model_dir, forward_type, model_type, facesize);
-	}else{
-	    std::cout<<"############### scrfd ###############"<<std::endl;
-	    init_ret = ExtractInit(handle, model_dir, forward_type, model_type);
-	}
+	init_ret = ExtractInit(handle, model_dir, forward_type, model_type);
         std::cout<<"************************* 检测人脸模式 *************************"<<std::endl;
     }else{
 	handle = GetFeatureHandle();
@@ -79,7 +73,7 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
                 int* location = feats_info.location;
                 for (int i=0; i<num_faces; i++){
                     file_vector.push_back(fullname);
-		    for (int n=0; n<4; n++) rect_vector.push_back(location[i*4+n]); 
+		    for (int n=0; n<14; n++) rect_vector.push_back(location[i*14+n]); 
                     std::vector<float> featvector;
                     for (int j = 0; j < 512; j++) {
                         featvector.push_back(*(FaceFeature + i*512 + j));
@@ -131,14 +125,20 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
 		    utils::splitPathAndName(file_vector[i], directory, filename);
     	            if (label==-1){
                         std::string destdir = utils::JoinPaths(input_dir,std::to_string(cout+1));
-			utils::CreateDirectory(destdir);
+			 utils::CreateDirectory(destdir);
                         utils::CopyFile(file_vector[i], utils::JoinPaths(destdir,filename));
                     }else{
                         std::string imagedir = utils::JoinPaths(output_dir,std::to_string(label));
-			utils::CreateDirectory(imagedir);
+			 utils::CreateDirectory(imagedir);
                         //utils::CopyFile(file_vector[i], utils::JoinPaths(imagedir,filename));
-                        int rect[4]; for (int j=i*4;j<i*4+4;j++) rect[j-i*4]=rect_vector[j]; 
+                        int rect[4]; for (int j=i*14;j<i*14+4;j++) rect[j-i*14]=rect_vector[j]; 
                         DrawRectangle(file_vector[i].c_str(), rect, utils::JoinPaths(imagedir,filename+".jpg").c_str());
+                        
+                        //Handle* handle = GetPhotoHandle();
+                        //int FaceRect[14]; for (int j=i*14;j<i*14+14;j++) FaceRect[j-i*14]=rect_vector[j]; 
+                        //tiorb_face_photo_info photo_info;
+                        //PhotoExtractPath(handle, file_vector[i].c_str(), FaceRect, &photo_info);
+                        //PhotoDestroyStruct(&photo_info);
                     } 
                 }
                 std::vector<std::string>().swap(file_vector);
@@ -216,6 +216,7 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
     }
 }
 
+
 int main(int argc, char **argv){
     int num_cluster=0;
     int PearPREFace=atoi(argv[1]);
@@ -224,13 +225,15 @@ int main(int argc, char **argv){
     input_dir = argv[4];
     ISdetect = atoi(argv[5]);
     forward_type=atoi(argv[6]);
-    bigface=atoi(argv[7]);
-    facesize=atoi(argv[8]);
+    facesize=atoi(argv[7]);
     std::vector<int> labelvec;
 
-    int ret = InitParams(model_dir, "ee41748965094fc6", "6d61d890892af4ed2211381db9ceeea2", "");
-    std::cout<<"鉴权##: "<< ret<<std::endl;
-    ofs << "fullname," << "detect(ms),"<< "landmark(ms),"<< "quality(ms),"<< "feature(ms),"<< "all(ms)" << "\n";
+    int ret = InitParams(model_dir, "d2f73afa5d59cab5", "4523eac20d03df81c225d9260284f759");
+    if (ret != 0) {
+        std::cerr << "Failed to Init Params: "<< ret << std::endl;
+        exit(1);
+    } 
+    ofs << "fullname, " << "detect(ms), "<< "landmark(ms), "<< "quality(ms), "<< "feature(ms), "<< "all(ms)" << "\n";
     
     tiorb_face_cluster_info cluster_info;
     for (int i=0; i<sum; i++)
@@ -239,7 +242,6 @@ int main(int argc, char **argv){
         func(labelvec,num_cluster,cluster_info,PearPREFace,i);
     }
     ofs.close();
-    //txt.close();
     ClusterDestroy(&cluster_info);
     return 0;
 }

@@ -1,30 +1,28 @@
 cmake_minimum_required(VERSION 3.10)
-project("cartoon")
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -std=c++14 -fpermissive")
+project("GetFeature")
 
+set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17") 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../")
+set(CODE_DIR "${PROJECT_SOURCE_DIR}/")
+
+
 include_directories(${PLATFORM}_${PROJECT_NAME} PUBLIC
-	$<BUILD_INTERFACE:${SOURCE_DIR}/include>
+	$<BUILD_INTERFACE:${SOURCE_DIR}/3third/include>
+	$<BUILD_INTERFACE:${CODE_DIR}/src>
 )
 
-set(utils_file ${SOURCE_DIR}/src/utils.cpp)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
+set(utils_file ${SOURCE_DIR}/3third/include/utils.cpp)
+file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/${ANDROID_ABI}/*.so)
+
 if(${PLATFORM} MATCHES "Linux")
     message("#################### ${PLATFORM} ####################")
-    file(GLOB ENGINE_LIBS ${SOURCE_DIR}/so/${PLATFORM}/*.so)
-elseif(${PLATFORM} MATCHES "ARM")
-    message("#################### ${PLATFORM} ${ARM_ABI} ####################")
-    file(GLOB ENGINE_LIBS ${SOURCE_DIR}/so/${PLATFORM}/${ARM_ABI}/*.so)
+    add_executable(Linux_main ${CODE_DIR}/src/test_main.cpp ${utils_file})
+    target_link_libraries(Linux_main PUBLIC ${ENGINE_LIBS} dl pthread)
 endif()
 
-add_executable(${PLATFORM}_${PROJECT_NAME} test_Cartoon.cpp ${utils_file})
-target_link_libraries(${PLATFORM}_${PROJECT_NAME} PUBLIC
-	${ENGINE_LIBS}
-	dl pthread
-)
 
 
 

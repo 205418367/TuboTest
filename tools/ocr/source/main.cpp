@@ -1,10 +1,9 @@
 #include "OcrLite.h"
 #include "json.h"
-#include <cstring>
-#include <sys/stat.h>
-#include <dirent.h>
+#include "utils.h"
 #include <fstream>
 
+using namespace std;
 using json = nlohmann::json;
 
 bool writeFile(const std::string& filename, const char* content) {
@@ -19,10 +18,10 @@ bool writeFile(const std::string& filename, const char* content) {
     }
 }
 
-void drawImage(const char* imgfile, tiorb_img_ocr_info &ocr_info){
+void drawImage(const string& output, const string& imgfile, tiorb_img_ocr_info &ocr_info){
     json data = nlohmann::json::parse(ocr_info.content);
     int numrect = data["numrect"];
-    std::string outpath = "data/results/"+std::string(imgfile)+".txt";
+    std::string outpath = utils::JoinPaths(output, imgfile+".txt");
     if (data["numrect"] == 0) {
 	std::cout<<"1 =================="<<std::endl;
 	writeFile(outpath, "");
@@ -38,33 +37,28 @@ void drawImage(const char* imgfile, tiorb_img_ocr_info &ocr_info){
 int main(int argc, char **argv) {
     const char *model_dir = argv[1];
     const char *input_dir = argv[2]; 
+    const char *output_dir= argv[3]; 
 
-    struct dirent *dir_entry;
-    DIR *dir = opendir(input_dir);
-    if (!dir) {
-        printf("unable to open directory\n");
+    std::cout<< "====>begning"<< std::endl;
+    Handle *handle = GetOcrHandle();
+    int ret = OcrInit(handle, model_dir, 0);
+    if (ret != 0) {
+        std::cerr << "Ocr Init: "<< ret << std::endl;
         exit(1);
     } 
 
-    Handle *handle = GetOcrImgHandle();
-    int ret = OcrImgInit(handle, model_dir, 0, 1);
-    if (ret != 0) return ret;
+    std::cout<< "====>input_dir:"<< input_dir << std::endl;
+    vector<string> TraverseVec = utils::TraverseDirectory(input_dir);
+    std::cout<< "====>nums:" << TraverseVec.size() << std::endl;
+    for (auto path : TraverseVec){
+	tiorb_img_ocr_info ocr_info;
+        ret = OcrInferPath(handle, path.c_str(), &ocr_info);
+        std::cout<< "====>" << path << " ret:" << ret << std::endl;
+        if (ret != 0) continue;
 
-    while ((dir_entry = readdir(dir)) != 0) {
-        if (strcmp(dir_entry->d_name, ".") && strcmp(dir_entry->d_name, "..")) {
-            char path[1000];
-            path[0] = '\0';
-            strcat(path, input_dir);
-            strcat(path, "/");
-            strcat(path, dir_entry->d_name);
-	    std::cout<< dir_entry->d_name <<std::endl;
-
-	    tiorb_img_ocr_info ocr_info;
-            ret = OcrImgInferPath(handle, path, &ocr_info);
-            if (ret != 0) return ret;
-            drawImage(dir_entry->d_name, ocr_info);
-	    OcrImgDestroyStruct(&ocr_info);
-        }
+        string _, Name; utils::splitPathAndName(path, _, Name);
+        drawImage(output_dir, Name, ocr_info);
+        OcrDestroyStruct(&ocr_info);
     }
     return 0;
 }
