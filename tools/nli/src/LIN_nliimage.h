@@ -25,5 +25,6 @@ int NliImgInfer(Handle *handle, const unsigned char *src, int size, tiorb_img_fe
 int NliImgInferPath(Handle *handle, const char *imgpath, tiorb_img_feat_info *feature);
 int NliImgDestroyStruct(tiorb_img_feat_info *feature);
 int NliImgInferJson(Handle* handle, const char* JsonStr, TiorbModuleJsonInfo* JsonInfo, int NumThreads);
+//int NliImgInferBatch(Handle* handle, const char* injson, TiorbModuleJsonInfo* outjson, int NumThreads);
 }
 

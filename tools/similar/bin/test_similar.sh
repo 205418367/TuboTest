@@ -9,7 +9,7 @@ export LD_LIBRARY_PATH=../../3third/so/Linux:$LD_LIBRARY_PATH
 rm -rf data/results
 mkdir -p data/results
 
-./Linux_similar 4 models/ data/images data/results 0
+./Linux_similar 1 openvino/similar/ data/images data/results 0
 
 
 

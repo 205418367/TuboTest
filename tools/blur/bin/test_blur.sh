@@ -13,7 +13,7 @@ mkdir -p ${OUTPUT}/sharp
 mkdir -p ${OUTPUT}/blur
 mkdir -p ${OUTPUT}/norm
 
-./Linux_blur 4 models/ ${TARGET} ${OUTPUT}
+./Linux_blur 1 openvino/blur/ ${TARGET} ${OUTPUT}
 
 
 

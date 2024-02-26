@@ -32,8 +32,8 @@ elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
         target_link_libraries(${ANDROID_ABI}_cluster PUBLIC ${ENGINE_LIBS} OpenVX ovxlib VSC GAL ArchModelSw NNArchPerf dl pthread)
     else()
         # export embedding
-        add_executable(Android_similar ${CODE_DIR}/src/test_similar.cpp ${utils_file})
-        target_link_libraries(Android_similar PUBLIC ${ENGINE_LIBS} dl)
+        add_executable(arm_similar ${CODE_DIR}/src/test_thread.cpp ${utils_file})
+        target_link_libraries(arm_similar PUBLIC ${ENGINE_LIBS} dl)
     endif()
 endif()
 

@@ -5,42 +5,51 @@
 #include "LIN_nliimage.h"
 #include "LIN_nlicluster.h"
 #include "json.h"
+
 using json = nlohmann::json;
 
 int main(int argc, char **argv){
-    int thread_nums =atoi(argv[1]);
+    int thread_nums = atoi(argv[1]);
     const char* model_dir = argv[2];
     const char* input_dir = argv[3];
     const char* output_dir= argv[4];
-    int forward_type =atoi(argv[5]);
 
-    int ret = InitParams(model_dir, "d2f73afa5d59cab5", "4523eac20d03df81c225d9260284f759");
-    std::cout<< "====> Init Params:"<<ret<<std::endl;
-    if (ret != 0) exit(1);
-    
-    struct Handle *handle = GetNliImgHandle(); 
-    ret = NliImgInit(handle, model_dir, forward_type);
-    //ret = NliENImgInit(handle, model_dir, 0);
+    int ret = InitParams(model_dir, "ee41748965094fc6", "6d61d890892af4ed2211381db9ceeea2");
     if (ret != 0) {
-        std::cerr << "Failed to Extract Init: "<< ret << std::endl;
+        std::cerr << "Failed to Init Params: "<< ret << std::endl;
         exit(1);
+    }
+    
+    std::string imgfeat = utils::JoinPaths(input_dir,"imgfeat.json");
+    if (!utils::FileExist(imgfeat)){
+        struct Handle *handle = GetNliImgHandle(); 
+        ret = NliImgInit(handle, model_dir, 0);
+        if (ret != 0) {
+            std::cerr << "Failed to NliImgInit: "<< ret << std::endl;
+            exit(1);
+        }
+        std::ofstream write(imgfeat);
+        TiorbModuleJsonInfo outjson;
+        TIME startTime = utils::GetCurrentTime();
+        ret = NliImgInferJson(handle, input_dir, &outjson, thread_nums);
+        if (ret != 0) {
+            std::cerr << "Failed to NliImgInferJson: "<< ret << std::endl;
+            exit(1);
+        } 
+        int64_t Duration = utils::GetDurationTime(startTime); 
+        std::cout<<"====> thread_nums:"<<thread_nums<<" D`uration:"<<Duration<<std::endl;
+        write << std::string(outjson.content);
+        write.close();
+        DestroyModuleJson(&outjson); 
+        NliImgDestroy(handle);
     }
     
     std::vector<std::string> TraverseDir = utils::TraverseDirectory(input_dir);
-    TiorbModuleJsonInfo JsonInfo;
-    TIME startTime = utils::GetCurrentTime();
-    ret = NliImgInferJson(handle, input_dir, &JsonInfo, thread_nums);
-    int64_t Duration = utils::GetDurationTime(startTime); 
-    std::cout<<"====> thread_nums:"<<thread_nums<<" Duration:"<<Duration<<std::endl;
-    
-    if (ret != 0) {
-        std::cerr << "Failed to Extract Image Json: "<< ret << std::endl;
-        exit(1);
-    }
-    
+    std::ifstream jsonfile(imgfeat);
+    json outJson = json::parse(jsonfile);
+    jsonfile.close();
     std::vector<float> feat_vector;
     std::vector<std::string> file_vector;
-    json outJson = json::parse(JsonInfo.content);
     for (int i=0; i<outJson.size(); i++)
     {
         auto value = outJson[i];
@@ -49,8 +58,6 @@ int main(int argc, char **argv){
         feat_vector.insert(feat_vector.end(), feats_vec.begin(), feats_vec.end());
         file_vector.push_back(TraverseDir[i]);
     }
-    DestroyModuleJson(&JsonInfo);
-    NliImgDestroy(handle);
     
     int num_feats = feat_vector.size()/1024;
     float* imgfeatures = feat_vector.data();

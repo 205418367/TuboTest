@@ -14,7 +14,7 @@ int main(int argc, char **argv){
     const char* output_dir= argv[4];
 
     int ret = InitParams(model_dir, "d2f73afa5d59cab5", "4523eac20d03df81c225d9260284f759");
-    std::cout<< "====> Init Params:"<<ret<<std::endl;
+    std::cout<< "====>Init Params:"<<ret<<std::endl;
     if (ret != 0) exit(1);
     Handle* handle = GetExtractHandle();
     ret = ExtractInit(handle, model_dir, 0, 0);
@@ -27,7 +27,8 @@ int main(int argc, char **argv){
     json inJson(TraverseDir);
     TiorbModuleJsonInfo JsonInfo;
     TIME startTime = utils::GetCurrentTime();
-    ret = ExtractImageJson(handle, input_dir, &JsonInfo, thread_nums,"data/results");
+    std::cout<<"====> thread_nums:"<<thread_nums<<std::endl;
+    ret = ExtractImageJson(handle, input_dir, &JsonInfo, thread_nums);
     int64_t Duration = utils::GetDurationTime(startTime); 
     std::cout<<"====> thread_nums:"<<thread_nums<<" Duration:"<<Duration<<std::endl;
     if (ret != 0) {
@@ -57,6 +58,7 @@ int main(int argc, char **argv){
     std::cout<<"====>FaceCluster end!"<<std::endl;
     
     for (int i = 0; i < total_nums; i++) {
+        
         int label = *(cluster_info.labels + i);
         if (label == -1) continue;   
         string _, filename; utils::splitPathAndName(file_vector[i], _, filename);      

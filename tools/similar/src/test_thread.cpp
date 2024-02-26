@@ -55,7 +55,7 @@ int main(int argc, char **argv){
     int num_feats = feat_vector.size()/576;
     float* clusterfeats = feat_vector.data();
     tiorb_similar_cluster_info cluster_info;
-    ret = SimilarCluster(num_feats, clusterfeats, &cluster_info);
+    ret = SimilarCluster(num_feats, clusterfeats, &cluster_info, 0.94f);
     for (int i = 0; i<num_feats; i++) {
 	int label = *(cluster_info.labels + i);
         if (label == -1) continue;   

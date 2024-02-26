@@ -19,18 +19,12 @@ file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/${ANDROID_A
 
 if(${PLATFORM} MATCHES "Linux")
     message("#################### ${PLATFORM} ####################")
-    # export img embedding
-    #add_executable(Linux_imgfeat ${CODE_DIR}/src/export_imgfeat.cpp ${utils_file})
-    #target_link_libraries(Linux_imgfeat PUBLIC ${ENGINE_LIBS} dl pthread)
-    # export txt embedding
-    #add_executable(Linux_txtfeat ${CODE_DIR}/src/export_txtfeat.cpp ${utils_file})
-    #target_link_libraries(Linux_txtfeat PUBLIC ${ENGINE_LIBS} dl pthread)
     # test platform
     add_executable(Linux_platform ${CODE_DIR}/src/test_platform_thread.cpp ${utils_file})
     target_link_libraries(Linux_platform PUBLIC ${ENGINE_LIBS} dl pthread)
     # test search
-    #add_executable(Linux_search ${CODE_DIR}/src/test_search.cpp ${utils_file})
-    #target_link_libraries(Linux_search PUBLIC ${ENGINE_LIBS} dl pthread)
+    add_executable(Linux_search ${CODE_DIR}/src/test_search.cpp ${utils_file})
+    target_link_libraries(Linux_search PUBLIC ${ENGINE_LIBS} dl pthread)
 
 elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
     message("#################### ${PLATFORM} ${ANDROID_ABI} ####################")
@@ -42,15 +36,12 @@ elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
         add_executable(${ANDROID_ABI}_cluster ${SOURCE_DIR}/tools/face/test_cluster.cpp ${utils_file})
         target_link_libraries(${ANDROID_ABI}_cluster PUBLIC ${ENGINE_LIBS} OpenVX ovxlib VSC GAL ArchModelSw NNArchPerf dl pthread)
     else()
-        # export embedding
-        #add_executable(Android_embedding ${CODE_DIR}/src/export_imgfeat.cpp ${utils_file})
-        #target_link_libraries(Android_embedding PUBLIC ${ENGINE_LIBS} dl pthread)
         # test platform
-        add_executable(Android_platform ${CODE_DIR}/src/test_platform.cpp ${utils_file})
-        target_link_libraries(Android_platform PUBLIC ${ENGINE_LIBS} dl)
+        add_executable(arm_platform ${CODE_DIR}/src/test_platform_thread.cpp ${utils_file})
+        target_link_libraries(arm_platform PUBLIC ${ENGINE_LIBS} ${ONNXRUNTIME} dl pthread)
         # test search
-        #add_executable(Android_search ${CODE_DIR}/src/test_search.cpp ${utils_file})
-        #target_link_libraries(Android_search PUBLIC ${ENGINE_LIBS} dl pthread)
+        add_executable(arm_search ${CODE_DIR}/src/test_search.cpp ${utils_file})
+        target_link_libraries(arm_search PUBLIC ${ENGINE_LIBS} ${ONNXRUNTIME} dl pthread)
     endif()
 endif()
 

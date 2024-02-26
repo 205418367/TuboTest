@@ -13,6 +13,7 @@ include_directories(${PLATFORM}_${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CODE_DIR}/src>
 )
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../bin)
 set(utils_file ${SOURCE_DIR}/3third/include/utils.cpp)
 file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/*.so)
 
@@ -31,8 +32,8 @@ elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
         target_link_libraries(${ANDROID_ABI}_cluster PUBLIC ${ENGINE_LIBS} OpenVX ovxlib VSC GAL ArchModelSw NNArchPerf dl pthread)
     else()
         # export embedding
-        add_executable(Linux_blur ${CODE_DIR}/src/export_embedding.cpp ${utils_file})
-        target_link_libraries(Linux_blur PUBLIC ${ENGINE_LIBS} dl pthread)
+        add_executable(arm_blur ${CODE_DIR}/src/test_blur_module.cpp ${utils_file})
+        target_link_libraries(arm_blur PUBLIC ${ENGINE_LIBS} dl)
     endif()
 endif()
 

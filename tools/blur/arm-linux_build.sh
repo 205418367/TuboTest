@@ -1,7 +1,7 @@
 #!/bin/bash
 
 rm -rf build && mkdir build && cd build
-ARM_ABI="AARCH64" # AARCH64 YINGLAIARM YINGLAINPU LINARONPU LINAROCPU OPENWRT JBOLONG
+ARM_ABI="JDSPACE" # AARCH64 YINGLAIARM YINGLAINPU LINARONPU LINAROCPU OPENWRT JBOLONG
 PROJECT_PATH=`pwd`
 
 if [ "$ARM_ABI" = "AARCH64" ];then
@@ -9,11 +9,10 @@ if [ "$ARM_ABI" = "AARCH64" ];then
     CCTOOL=aarch64-openwrt-linux-gcc
     CXXTOOL=aarch64-openwrt-linux-g++
     export TOOLCHAIN=/media/lichen/4T-data/workspace/3third/toolchain-aarch64_cortex-a53_gcc-8.2.0_glibc
-elif [ "$ARM_ABI" = "YINGLAIARM" ];then
-    SYSTEM=aarch64
-    CCTOOL=aarch64-linux-gnu-gcc
-    CXXTOOL=aarch64-linux-gnu-g++
-    export TOOLCHAIN=/media/lichen/737b4994-de25-4859-aaed-da1136ebb3a1/storage/3third/aarch64v8-marvell-linux-gnu-5.2.1_x86_64_20151110
+elif [ "$ARM_ABI" = "JDSPACE" ];then
+    SYSTEM=riscv64
+    PREFIX=riscv64-unknown-linux-gnu
+    export TOOLCHAIN=/media/lichen/4T-data/workspace/3third/spacemit-toolchain-linux-glibc-x86_64-v0.3.0
 elif [ "$ARM_ABI" = "YINGLAINPU" ];then
     SYSTEM=aarch64
     CCTOOL=aarch64-linux-gnu-gcc
@@ -58,8 +57,8 @@ if [ "$ARM_ABI" = "OPENWRT" ] || [ "$ARM_ABI" = "OPENWRTNPU" ];then
     export CXXFLAGS="$CXXFLAGS -Os -fPIC -D_GLIBCXX_USE_CXX11_ABI=0 -I${TOOLCHAIN}/include -I${TOOLCHAIN2}/usr/include -I${TOOLCHAIN2}/usr/include/glib-2.0"
     export LDFLAGS="-L${TOOLCHAIN}/lib -L${TOOLCHAIN2}/usr/lib -static-libstdc++ -Wl,-rpath='\$\$ORIGIN/'"
 else
-    export LD_LIBRARY_PATH=$TOOLCHAIN/lib:$LD_LIBRARY_PATH
-    export PATH=$PATH:$TOOLCHAIN/bin
+    export CXXFLAGS="$CXXFLAGS -Os -fPIC -D_GLIBCXX_USE_CXX14_ABI=1 -I${TOOLCHAIN}/include"
+    export LDFLAGS="-L${TOOLCHAIN}/lib -static-libgcc -static-libstdc++ -Wl,-rpath=${TOOLCHAIN}/lib" # -Wl,-rpath=${TOOLCHAIN}/lib
 fi
 
 {
@@ -70,8 +69,8 @@ fi
     -DCMAKE_SYSTEM_NAME=Linux \
     -DCMAKE_SYSTEM_VERSION=1 \
     -DCMAKE_SYSTEM_PROCESSOR=$SYSTEM \
-    -DCMAKE_C_COMPILER=$TOOLCHAIN/bin/$CCTOOL \
-    -DCMAKE_CXX_COMPILER=$TOOLCHAIN/bin/$CXXTOOL
+    -DCMAKE_C_COMPILER=$TOOLCHAIN/bin/$PREFIX-gcc \
+    -DCMAKE_CXX_COMPILER=$TOOLCHAIN/bin/$PREFIX-g++
 }
 
 make -j2 && make install  

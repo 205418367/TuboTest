@@ -33,4 +33,15 @@ struct tiorb_nli_scene_info {
 EX_DLL int SceneInfer(float* target, int numFeats, float* imgFeats, tiorb_nli_scene_info* sceneInfo, float thresh);
 EX_DLL int SceneDestroy(tiorb_nli_scene_info* scene_info);
 
+struct tiorb_nli_hdf5_info { 
+    int numshow = 0;
+    char* content = nullptr;
+    float* scores = nullptr;
+};
+EX_DLL struct Handle *GetHdf5FeatHandle();
+EX_DLL int Hdf5FeatInit(Handle *handle, const char* hdf5_file, const char* datasetName);
+EX_DLL int Hdf5FeatSearch(Handle *handle, float* target, tiorb_nli_hdf5_info* hdf5_info, float thresh);
+//EX_DLL int Hdf5RetriveScene(Handle *handle, float* target, tiorb_nli_hdf5_info* hdf5_info, float thresh);
+EX_DLL int Hdf5FeatDestroyStruct(tiorb_nli_hdf5_info* hdf5_info);
+EX_DLL int Hdf5FeatDestroyHandle(Handle *handle);
 }
