@@ -20,7 +20,7 @@ file(GLOB ENGINE_LIBS ${SOURCE_DIR}/3third/so/${PLATFORM}/${ARM_ABI}/${ANDROID_A
 if(${PLATFORM} MATCHES "Linux")
     message("#################### ${PLATFORM} ####################")
     # test platform
-    add_executable(Linux_platform ${CODE_DIR}/src/test_platform_thread.cpp ${utils_file})
+    add_executable(Linux_platform ${CODE_DIR}/src/test_platform.cpp ${utils_file})
     target_link_libraries(Linux_platform PUBLIC ${ENGINE_LIBS} dl pthread)
     # test search
     add_executable(Linux_search ${CODE_DIR}/src/test_search.cpp ${utils_file})

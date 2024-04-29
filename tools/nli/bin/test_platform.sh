@@ -1,8 +1,7 @@
 #!/bin/bash
 
 export LD_LIBRARY_PATH=../../3third/so/Linux:$LD_LIBRARY_PATH
-rm -rf data/results
-mkdir data/results
+find data/results/ -mindepth 1 -maxdepth 1 -not -name 'imgfeat.json' -exec rm -rf {} +
 
 # 自动生成影集
 # 参数1：模型目录
@@ -12,4 +11,4 @@ mkdir data/results
 # 参数5：每类最多展示
 # 参数6：聚类阈值
 
-./Linux_platform 4 models/ data/cluster data/results
+./Linux_platform 4 models/ data/bigimages data/results

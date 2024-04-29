@@ -1,7 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <sys/stat.h>
-#include <dirent.h>
 #include "LIN_nlicluster.h"
 #include "LIN_nliimage.h"
 #include "LIN_nlitxt.h"
@@ -19,16 +17,33 @@ int main(int argc, char **argv){
     float thresh = atof(argv[4]);
     const char *input_dir= argv[5]; 
     const char *output_dir= argv[6];
-   
+    
     int ret = InitParams(model_dir, "ee41748965094fc6", "6d61d890892af4ed2211381db9ceeea2");
     if (ret != 0) {
         std::cerr << "Failed to Init Params: "<< ret << std::endl;
         exit(1);
     } 
     
+    //ret = InitLogger(output_dir);
+    //if (ret != 0) {
+        //std::cerr << "Failed to Init Logger: "<< ret << std::endl;
+        //exit(1);
+    //} 
+    //LogError(__func__, "success!");
+    
     int type = (utils::FileExist(input_data) == 1);
-    std::string imgfeat = utils::JoinPaths(input_dir,"imgfeat.json");
-    if (!utils::FileExist(imgfeat)){
+    std::string imgfeat = utils::JoinPaths(output_dir,"imgfeat.json");
+    bool FileExist = true;
+    try {
+        int size = (int)fs::file_size(imgfeat);
+        if (size == 0) {
+            FileExist = false;
+        }
+    } catch (std::filesystem::filesystem_error& e) {
+        FileExist = false;
+    }
+    
+    if (!FileExist){
         struct Handle *handle = GetNliImgHandle(); 
         ret = NliImgInit(handle, model_dir, 0);
         if (ret != 0) {
@@ -69,7 +84,7 @@ int main(int argc, char **argv){
     tiorb_nli_search_info search_info;
     if (type == 0){
 	struct Handle *handle = GetNliTxtHandle(); 
-        ret = NliZHTxtInit(handle, model_dir, 0);
+        ret = NliTxtInit(handle, model_dir, 0);
 	//ret = NliENTxtInit(handle, model_dir, 0);
         if (ret != 0) {
             std::cerr << "Failed to NliZHTxtInit: "<< ret << std::endl;
@@ -82,7 +97,7 @@ int main(int argc, char **argv){
             std::cerr << "Failed to NliTxtInfer: "<< ret << std::endl;
             exit(1);
         } 
-	SearchImg(feat.txtFeature, feat_vector.size()/1024, feat_vector.data(), &search_info, 10);
+	SearchImg(feat.txtFeature, feat_vector.size()/1024, feat_vector.data(), &search_info, thresh, 10);
 	NliTxtDestroyStruct(&feat);
 	NliTxtDestroy(handle);
     }else{
@@ -99,7 +114,7 @@ int main(int argc, char **argv){
             std::cerr << "Failed to NliImgInfer: "<< ret << std::endl;
             exit(1);
         }
-	SearchImg(feat.imgFeature, feat_vector.size()/1024, feat_vector.data(), &search_info, 10);
+	SearchImg(feat.imgFeature, feat_vector.size()/1024, feat_vector.data(), &search_info, thresh, 10);
 	NliImgDestroyStruct(&feat);
 	NliImgDestroy(handle);
     }
@@ -109,12 +124,12 @@ int main(int argc, char **argv){
     float* scores=search_info.scores;
     for (int i=0; i<numshow; i++){
 	std::string imgpath = file_vector[indexs[i]];
-	if (scores[i] >= thresh){
+	//if (scores[i] >= thresh){
             std::cout<<"====>name:"<<imgpath<<" score:"<<scores[i]<<std::endl;
             std::string dir, name; utils::splitPathAndName(imgpath, dir, name);
-            std::string target = utils::JoinPaths(output_dir, std::to_string(i)+name);
+            std::string target = utils::JoinPaths(output_dir, std::to_string(i)+"_"+name);
             utils::CopyFile(imgpath, target);
-	}
+	//}
     }
     SearchDestroy(&search_info);
     return 0;

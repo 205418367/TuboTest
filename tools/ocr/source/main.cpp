@@ -23,9 +23,7 @@ void drawImage(const string& output, const string& imgfile, tiorb_img_ocr_info &
     int numrect = data["numrect"];
     std::string outpath = utils::JoinPaths(output, imgfile+".txt");
     if (data["numrect"] == 0) {
-	std::cout<<"1 =================="<<std::endl;
 	writeFile(outpath, "");
-	std::cout<<"2 =================="<<std::endl;
     }else{
 	for (int i=0; i<numrect; i++){
             std::string text = data["txtrect"]["text"][i];

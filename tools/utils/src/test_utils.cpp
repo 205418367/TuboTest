@@ -12,12 +12,15 @@ int main(int argc, char **argv){
     const char *output_dir= argv[3];
    
     TIME startTime = utils::GetCurrentTime();
-    TiorbModuleJsonInfo JsonInfo;
-    int ret = ResizeImageBatch(input_dir, 800, output_dir, &JsonInfo, 4);
-    //int ret = FrameExtraction(path.c_str(), 800, output_dir, 10);
-    if (ret !=0) std::cout<<"************* error! ************* "<< ret <<std::endl;
+    std::tuple<unsigned char*, int> result = utils::readBuffer(input_dir);
+    unsigned char* ptr = std::get<0>(result); 
+    int value = std::get<1>(result);
+
+    int ret = ResizeImageBuffer(ptr, value, target, output_dir);
+    
+    if (ret != 0) std::cout<<"************* error! ************* "<< ret <<std::endl;
     int64_t Duration = utils::GetDurationTime(startTime); 
-    std::cout<<"====> thread_nums:"<<4<<" Duration:"<<Duration<<std::endl;
+    std::cout<<" Duration:"<<Duration<<std::endl;
     return 0;
 }
 

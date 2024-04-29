@@ -20,9 +20,8 @@ elif [ "$ARM_ABI" = "YINGLAINPU" ];then
     export TOOLCHAIN=/media/lichen/737b4994-de25-4859-aaed-da1136ebb3a1/workspace2/3third/gcc-arm-8.3-2019.03-x86_64-aarch64-linux-gnu
 elif [ "$ARM_ABI" = "LINARO" ];then
     SYSTEM=aarch64
-    CCTOOL=aarch64-linux-gnu-gcc
-    CXXTOOL=aarch64-linux-gnu-g++
-    export TOOLCHAIN=/media/lichen/737b4994-de25-4859-aaed-da1136ebb3a1/storage/3third/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
+    PREFIX=aarch64-linux-gnu
+    export TOOLCHAIN=/media/lichen/4T-data/workspace/3third/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
 elif [ "$ARM_ABI" = "OPENWRT" ];then
     SYSTEM=x86_64
     CCTOOL=x86_64-openwrt-linux-gcc
@@ -74,9 +73,7 @@ fi
 }
 
 make -j2 && make install  
-cp Linux_platform ../bin/
-cp Linux_embedding ../bin/
-cp Linux_search ../bin/
+cp Linux_cluster ../bin
 cd .. && rm -rf build
 
 

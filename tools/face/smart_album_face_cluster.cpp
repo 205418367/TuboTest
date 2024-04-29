@@ -34,6 +34,7 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
 
     struct Handle* handle = GetExtractHandle();
     int ret = ExtractInit(handle, model_dir, forward_type, model_type);
+    std::cout<<"************************* 检测人脸模式 *************************"<<std::endl;
     if (ret != 0) {printf("######ret: %d \n", ret); return;}
 
     while (FLAG)
@@ -87,7 +88,6 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
                 FaceCluster(PREFaceNums, clusterfeats, &cluster_info, thresh);
 		delete[] clusterfeats;
                 num_cluster = cluster_info.num_cluster;
-                if (num_cluster == 0) continue;
                 for (int i = 0; i < PREFaceNums; i++) {
                     int label = *(cluster_info.labels + i);
                     labelvec.push_back(label);
@@ -104,10 +104,11 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
                         //int rect[4]; for (int j=i*14;j<i*14+4;j++) rect[j-i*14]=rect_vector[j]; 
                         //DrawRectangle(file_vector[i].c_str(), rect, utils::JoinPaths(imagedir,filename+".jpg").c_str());
                         
-                        int FaceRect[14]; for (int j=i*14;j<i*14+14;j++) FaceRect[j-i*14]=rect_vector[j]; 
-                        tiorb_face_photo_info photo_info;
-                        PhotoExtractPath(file_vector[i].c_str(), FaceRect, &photo_info);
-                        PhotoDestroyStruct(&photo_info);
+                        //Handle* handle = GetPhotoHandle();
+                        //int FaceRect[14]; for (int j=i*14;j<i*14+14;j++) FaceRect[j-i*14]=rect_vector[j]; 
+                        //tiorb_face_photo_info photo_info;
+                        //PhotoExtractPath(handle, file_vector[i].c_str(), FaceRect, &photo_info);
+                        //PhotoDestroyStruct(&photo_info);
                     } 
                 }
                 std::vector<std::string>().swap(file_vector);

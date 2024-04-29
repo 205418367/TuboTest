@@ -12,6 +12,8 @@ int main(int argc, char **argv){
     const char* model_dir = argv[2];
     const char* input_dir = argv[3];
     const char* output_dir= argv[4];
+    const char* photo_dir= argv[5];
+    float thresh = atof(argv[6]);
 
     int ret = InitParams(model_dir, "d2f73afa5d59cab5", "4523eac20d03df81c225d9260284f759");
     std::cout<< "====>Init Params:"<<ret<<std::endl;
@@ -28,7 +30,7 @@ int main(int argc, char **argv){
     TiorbModuleJsonInfo JsonInfo;
     TIME startTime = utils::GetCurrentTime();
     std::cout<<"====> thread_nums:"<<thread_nums<<std::endl;
-    ret = ExtractImageJson(handle, input_dir, &JsonInfo, thread_nums);
+    ret = ExtractImageJson(handle, input_dir, &JsonInfo, thread_nums, photo_dir);
     int64_t Duration = utils::GetDurationTime(startTime); 
     std::cout<<"====> thread_nums:"<<thread_nums<<" Duration:"<<Duration<<std::endl;
     if (ret != 0) {
@@ -54,7 +56,7 @@ int main(int argc, char **argv){
     int total_nums = feat_vector.size()/512;
     float* clusterfeats = feat_vector.data();
     tiorb_face_cluster_info cluster_info;
-    FaceCluster(total_nums, clusterfeats, &cluster_info, 0.53f);
+    FaceCluster(total_nums, clusterfeats, &cluster_info, thresh);
     std::cout<<"====>FaceCluster end!"<<std::endl;
     
     for (int i = 0; i < total_nums; i++) {
