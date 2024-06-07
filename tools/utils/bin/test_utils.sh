@@ -9,7 +9,7 @@ export LD_LIBRARY_PATH=../../3third/so/Linux:$LD_LIBRARY_PATH
 rm -rf data/results
 mkdir -p data/results
 
-./Linux_utils 128 data/images/aaouqitaljfkczwvedjhvvlohmljmb.jpg temp.jpg
+./Linux_utils "LUTs/FujiClassicNeg.cube" data/images data/results/
 
 
 

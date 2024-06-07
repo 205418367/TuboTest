@@ -13,7 +13,7 @@ mkdir data/debug
 # 参数4：数据路径
 # 参数5：封面路径
 # 参数6：聚类阈值，默认0.53
-./Linux_cluster 200 2 models/ data/cluster data/results 0.53
+./Linux_cluster 200 2 4 models/ data/cluster data/results 0.53
 
 
 

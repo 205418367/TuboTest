@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     const char *save_dir = argv[2]; 
 
     int width = 1920; //1920;2000
-    int height= 1200; //1080;1500
+    int height= 1080; //1080;1500
 
     tiorb_img_merge_info merge_info;
     int ret = MergeFromPath(width, height, json_dir, save_dir, &merge_info);

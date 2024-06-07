@@ -25,6 +25,9 @@ if(${PLATFORM} MATCHES "Linux")
     # test search
     add_executable(Linux_search ${CODE_DIR}/src/test_search.cpp ${utils_file})
     target_link_libraries(Linux_search PUBLIC ${ENGINE_LIBS} dl pthread)
+    
+    add_library(nlisdk STATIC ${CODE_DIR}/src/LIN_nlitxt.cpp)
+    target_link_libraries(Linux_search PUBLIC ${ENGINE_LIBS})
 
 elseif(${PLATFORM} MATCHES "ARM" OR ${PLATFORM} MATCHES "Android")
     message("#################### ${PLATFORM} ${ANDROID_ABI} ####################")

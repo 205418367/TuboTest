@@ -11,7 +11,7 @@ find data/results/ -mindepth 1 -maxdepth 1 -not -name 'imgfeat.json' -exec rm -r
 # 参数5：输入图片的目录
 # 参数5：搜索结果保存目录
 
-./Linux_search 4 models/ "海滩" 0.5 data/images data/results
+./Linux_search 4 models/ scene.txt 0.5 data/images data/results
 
 
 

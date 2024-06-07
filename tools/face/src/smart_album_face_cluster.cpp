@@ -104,10 +104,10 @@ void func(std::vector<int>& labelvec, int& num_cluster, tiorb_face_cluster_info&
                         //int rect[4]; for (int j=i*14;j<i*14+4;j++) rect[j-i*14]=rect_vector[j]; 
                         //DrawRectangle(file_vector[i].c_str(), rect, utils::JoinPaths(imagedir,filename+".jpg").c_str());
                         
-                        int FaceRect[14]; for (int j=i*14;j<i*14+14;j++) FaceRect[j-i*14]=rect_vector[j]; 
-                        tiorb_face_photo_info photo_info;
-                        PhotoExtractPath(file_vector[i].c_str(), FaceRect, &photo_info);
-                        PhotoDestroyStruct(&photo_info);
+                        //int FaceRect[14]; for (int j=i*14;j<i*14+14;j++) FaceRect[j-i*14]=rect_vector[j]; 
+                        //tiorb_face_photo_info photo_info;
+                        //PhotoExtractPath(file_vector[i].c_str(), FaceRect, &photo_info);
+                        //PhotoDestroyStruct(&photo_info);
                     } 
                 }
                 std::vector<std::string>().swap(file_vector);
@@ -184,10 +184,11 @@ int main(int argc, char **argv){
     int num_cluster=0;
     int PearPREFace=atoi(argv[1]);
     int sum = atoi(argv[2]);
-    model_dir = argv[3];
-    input_dir = argv[4];
-    photo_dir = argv[5];
-    thresh = atof(argv[6]);
+    forward_type = atoi(argv[3]);
+    model_dir = argv[4];
+    input_dir = argv[5];
+    photo_dir = argv[6];
+    thresh = atof(argv[7]);
     std::vector<int> labelvec;
 
     int ret = InitParams(model_dir, "d2f73afa5d59cab5", "4523eac20d03df81c225d9260284f759");

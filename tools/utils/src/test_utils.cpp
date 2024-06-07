@@ -1,26 +1,26 @@
 #include <iostream>
-#include <vector>
-#include <sys/stat.h>
-#include <dirent.h>
 #include "LIN_utils.h"
 #include "utils.h"
 #include <string.h>
+#include <chrono>
+#include <thread>
+
+using namespace std;
 
 int main(int argc, char **argv){
-    int target = atoi(argv[1]);
-    const char *input_dir = argv[2];
-    const char *output_dir= argv[3];
-   
-    TIME startTime = utils::GetCurrentTime();
-    std::tuple<unsigned char*, int> result = utils::readBuffer(input_dir);
-    unsigned char* ptr = std::get<0>(result); 
-    int value = std::get<1>(result);
-
-    int ret = ResizeImageBuffer(ptr, value, target, output_dir);
+    const char* lut_dir = argv[1];
+    const char* img_dir = argv[2];
+    const char* out_dir = argv[3];
     
-    if (ret != 0) std::cout<<"************* error! ************* "<< ret <<std::endl;
-    int64_t Duration = utils::GetDurationTime(startTime); 
-    std::cout<<" Duration:"<<Duration<<std::endl;
+    auto pathVec = utils::TraverseDirectory(img_dir);
+    for (auto path : pathVec){
+        std::cout<<"============> path:"<<path<<std::endl;
+    
+        string directory, fileName, extension;
+        utils::splitPathAndName(path, directory, fileName);
+        string name = string(out_dir)+"/"+fileName;
+        applyLutEffect(lut_dir, path.c_str(), name.c_str());
+    }
     return 0;
 }
 

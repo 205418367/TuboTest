@@ -11,4 +11,4 @@ make -j2 && make install
 #cp Linux_imgfeat ../bin/
 #cp Linux_txtfeat ../bin/
 #cp Linux_search ../bin/
-cd .. && rm -rf build
+#cd .. && rm -rf build

@@ -7,6 +7,7 @@ struct tiorb_image_feats_info {
         int* location = nullptr;     
         float* quality = nullptr;     
 	float* FaceFeature = nullptr; 
+	char* imgpath = nullptr;
 };
 struct Handle* GetExtractHandle();  
 

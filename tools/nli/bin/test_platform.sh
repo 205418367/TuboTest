@@ -11,4 +11,4 @@ find data/results/ -mindepth 1 -maxdepth 1 -not -name 'imgfeat.json' -exec rm -r
 # 参数5：每类最多展示
 # 参数6：聚类阈值
 
-./Linux_platform 4 models/ data/bigimages data/results
+./Linux_platform 4 models/ data/images data/results
